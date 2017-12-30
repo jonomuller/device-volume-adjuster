@@ -65,7 +65,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-in test"
+            argument = "-i -n &quot;Built-in Microphone&quot;"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

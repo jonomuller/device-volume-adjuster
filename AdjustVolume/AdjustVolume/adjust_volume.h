@@ -24,5 +24,5 @@ typedef enum {
 } FunctionType;
 
 int startVolumeAdjuster(int argc, const char * argv[]);
-AudioDeviceID getDeviceID(char deviceName[]);
+AudioDeviceID getDeviceID(char * deviceName);
 void adjustVolume(AudioDeviceID deviceID, FunctionType type);
