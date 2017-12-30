@@ -7,7 +7,8 @@
 //
 
 #include <stdio.h>
+#include "adjust_volume.h"
 
 int main(int argc, const char * argv[]) {
-  return adjustVolume(argc, argv);
+  return startVolumeAdjuster(argc, argv);
 }
