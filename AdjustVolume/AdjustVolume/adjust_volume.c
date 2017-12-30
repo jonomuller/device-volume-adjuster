@@ -12,7 +12,7 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   int opt;
   int functionType = 0;
   char deviceName[256];
-  int volumeLevel;
+  Float32 newVolume = -1.0;
   
   while ((opt = getopt(argc, (char **) argv, "n:ids:")) != -1) {
     switch (opt) {
@@ -27,7 +27,7 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
         break;
       case 's':
         functionType = kSetVolume;
-        volumeLevel = atoi(optarg);
+        newVolume = atof(optarg);
         break;
       default:
         break;
@@ -45,7 +45,18 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   }
   
   AudioDeviceID deviceID = getDeviceID(deviceName);
-  adjustVolume(deviceID, functionType);
+  AudioObjectPropertyAddress propertyAddress =  {
+    kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
+    kAudioDevicePropertyScopeOutput,
+    kAudioObjectPropertyElementMaster
+  };
+  
+  if (functionType != kSetVolume) {
+    newVolume = getNewVolume(deviceID, functionType, propertyAddress);
+  }
+  
+  // Check for newVolume < 0 ?
+  setVolume(deviceID, newVolume, propertyAddress);
   return 0;
 }
 
@@ -55,7 +66,10 @@ AudioDeviceID getDeviceID(char * deviceName) {
   AudioObjectID defaultID = kAudioObjectSystemObject;
   
   // Get address for all hardware devices
-  AudioObjectPropertyAddress devicesAddress = { kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
+  AudioObjectPropertyAddress devicesAddress = {
+    kAudioHardwarePropertyDevices,
+    kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMaster };
   
   // Retreive property size within devices address
   AudioObjectGetPropertyDataSize(defaultID, &devicesAddress, 0, nil, &propertySize);
@@ -70,7 +84,10 @@ AudioDeviceID getDeviceID(char * deviceName) {
     UInt32 nameSize = 256;
     char name[nameSize];
     
-    AudioObjectPropertyAddress deviceNameAddress = { kAudioDevicePropertyDeviceName, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
+    AudioObjectPropertyAddress deviceNameAddress = {
+      kAudioDevicePropertyDeviceName,
+      kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMaster };
     
     // Get device name from id
     AudioObjectGetPropertyData(ids[i], &deviceNameAddress, 0, nil, &nameSize, (char *) name);
@@ -84,6 +101,29 @@ AudioDeviceID getDeviceID(char * deviceName) {
   return kAudioDeviceUnknown;
 }
 
-void adjustVolume(AudioDeviceID deviceID, FunctionType type) {
+Float32 getNewVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress) {
+  Float32 volume;
+  UInt32 volumeSize = sizeof(volume);
+  Float32 incLevel = 1.0 / 16.0;
   
+  // Get current volume level for requested device
+  AudioObjectGetPropertyData(deviceID, &propertyAddress, 0, nil, &volumeSize, &volume);
+  
+  switch (type) {
+    case kIncrementVolume:
+      return volume + incLevel;
+      break;
+    case kDecrementVolume:
+      return volume - incLevel;
+    default:
+      return -1.0;
+      break;
+  }
+}
+
+void setVolume(AudioDeviceID deviceID, Float32 volume, AudioObjectPropertyAddress propertyAddress) {
+  UInt32 volumeSize = sizeof(volume);
+  
+  // Set new volume level
+  AudioObjectSetPropertyData(deviceID, &propertyAddress, 0, nil, volumeSize, &volume);
 }

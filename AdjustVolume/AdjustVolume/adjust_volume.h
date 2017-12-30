@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <CoreAudio/CoreAudio.h>
+#include <AudioToolbox/AudioToolbox.h>
 
 #endif /* adjust_volume_h */
 
@@ -25,4 +26,5 @@ typedef enum {
 
 int startVolumeAdjuster(int argc, const char * argv[]);
 AudioDeviceID getDeviceID(char * deviceName);
-void adjustVolume(AudioDeviceID deviceID, FunctionType type);
+Float32 getNewVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress);
+void setVolume(AudioDeviceID deviceID, Float32 volumeLevel, AudioObjectPropertyAddress propertyAddress);
