@@ -25,6 +25,7 @@ typedef enum {
 } FunctionType;
 
 int startVolumeAdjuster(int argc, const char * argv[]);
+int multipleOptionError(void);
 AudioDeviceID getDeviceID(char * deviceName);
 Float32 getNewVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress);
 void setVolume(AudioDeviceID deviceID, Float32 volumeLevel, AudioObjectPropertyAddress propertyAddress);

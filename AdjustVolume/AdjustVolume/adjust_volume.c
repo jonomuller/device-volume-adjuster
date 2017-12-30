@@ -10,6 +10,7 @@
 
 int startVolumeAdjuster(int argc, const char * argv[]) {
   int opt;
+  int selected = 0;
   int functionType = 0;
   char deviceName[256];
   Float32 newVolume = -1.0;
@@ -20,12 +21,27 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
         strcpy(deviceName, optarg);
         break;
       case 'i':
+        if (selected == 1) {
+          return multipleOptionError();
+        }
+        
+        selected = 1;
         functionType = kIncrementVolume;
         break;
       case 'd':
+        if (selected == 1) {
+          return multipleOptionError();
+        }
+        
+        selected = 1;
         functionType = kDecrementVolume;
         break;
       case 's':
+        if (selected == 1) {
+          return multipleOptionError();
+        }
+        
+        selected = 1;
         functionType = kSetVolume;
         newVolume = atof(optarg);
         break;
@@ -35,16 +51,23 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   }
   
   if (strlen(deviceName) == 0) {
-    printf("-n is required, please enter a device name.");
+    printf("-n flag is required, please enter a device name.\n");
     return 1;
   }
   
   if (functionType == 0) {
-    printf("No function selected. Please select one function to adjust the volume (-i, -d, -s).");
+    printf("No function selected. Please select one function to adjust the volume (-i, -d, -s).\n");
     return 1;
   }
   
   AudioDeviceID deviceID = getDeviceID(deviceName);
+  
+  if (deviceID == kAudioDeviceUnknown) {
+    printf("Device name not found.\n");
+    return 1;
+  }
+  
+  // Property address of volume level, used for getting/setting volume
   AudioObjectPropertyAddress propertyAddress =  {
     kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
     kAudioDevicePropertyScopeOutput,
@@ -55,9 +78,13 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
     newVolume = getNewVolume(deviceID, functionType, propertyAddress);
   }
   
-  // Check for newVolume < 0 ?
   setVolume(deviceID, newVolume, propertyAddress);
   return 0;
+}
+
+int multipleOptionError() {
+  printf("Please select only one option out of -i, -d and -s.\n");
+  return 1;
 }
 
 AudioDeviceID getDeviceID(char * deviceName) {
