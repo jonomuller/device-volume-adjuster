@@ -22,6 +22,7 @@ typedef enum {
   kIncrementVolume = 1,
   kDecrementVolume = 2,
   kSetVolume = 3,
+  kMuteVolume = 4,
 } FunctionType;
 
 int startVolumeAdjuster(int argc, const char * argv[]);

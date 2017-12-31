@@ -15,35 +15,32 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   char deviceName[256];
   Float32 newVolume = -1.0;
   
-  while ((opt = getopt(argc, (char **) argv, "n:ids:")) != -1) {
+  while ((opt = getopt(argc, (char **) argv, "n:ids:m")) != -1) {
     switch (opt) {
       case 'n':
         strcpy(deviceName, optarg);
         break;
       case 'i':
-        if (selected == 1) {
-          return multipleOptionError();
-        }
-        
+        if (selected == 1) return multipleOptionError();
         selected = 1;
         functionType = kIncrementVolume;
         break;
       case 'd':
-        if (selected == 1) {
-          return multipleOptionError();
-        }
-        
+        if (selected == 1) return multipleOptionError();
         selected = 1;
         functionType = kDecrementVolume;
         break;
       case 's':
-        if (selected == 1) {
-          return multipleOptionError();
-        }
-        
+        if (selected == 1) return multipleOptionError();
         selected = 1;
         functionType = kSetVolume;
         newVolume = atof(optarg);
+        break;
+      case 'm':
+        if (selected == 1) return multipleOptionError();
+        selected = 1;
+        functionType = kMuteVolume;
+        newVolume = 0.0;
         break;
       default:
         break;
@@ -56,7 +53,7 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   }
   
   if (functionType == 0) {
-    printf("No function selected. Please select one function to adjust the volume (-i, -d, -s).\n");
+    printf("No function selected. Please select one function to adjust the volume (-i, -d, -s, -m).\n");
     return 1;
   }
   
@@ -74,7 +71,7 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
     kAudioObjectPropertyElementMaster
   };
   
-  if (functionType != kSetVolume) {
+  if (functionType == kIncrementVolume || functionType == kDecrementVolume) {
     newVolume = getNewVolume(deviceID, functionType, propertyAddress);
   }
   
@@ -83,7 +80,7 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
 }
 
 int multipleOptionError() {
-  printf("Please select only one option out of -i, -d and -s.\n");
+  printf("Please select only one option out of -i, -d, -s and -m.\n");
   return 1;
 }
 
