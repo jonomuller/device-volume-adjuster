@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
 #include <CoreAudio/CoreAudio.h>
 #include <AudioToolbox/AudioToolbox.h>
 
@@ -26,6 +27,7 @@ typedef enum {
 } FunctionType;
 
 int startVolumeAdjuster(int argc, const char * argv[]);
+void showHelpMenu(void);
 int multipleOptionError(void);
 AudioDeviceID getDeviceID(char * deviceName);
 Float32 getNewVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress);

@@ -69,12 +69,16 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-n &quot;Internal Speakers&quot; -m"
+            argument = "-n &quot;Built-in Output&quot; -m"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-d -n &quot;Logitech Z600&quot;"
+            argument = "--help"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-d -n &quot;Logitech Z600&quot;"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

@@ -15,8 +15,22 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   char deviceName[256];
   Float32 newVolume = -1.0;
   
-  while ((opt = getopt(argc, (char **) argv, "n:ids:m")) != -1) {
+  static struct option long_options[] = {
+    {"help", no_argument, NULL, 'h'},
+    {"device-name", required_argument, NULL, 'n'},
+    {"increment", no_argument, NULL, 'i'},
+    {"decrement", no_argument, NULL, 'd'},
+    {"set", required_argument, NULL, 's'},
+    {"mute", no_argument, NULL, 'm'},
+    {NULL, 0, NULL, 0}
+  };
+  
+  while ((opt = getopt_long(argc, (char **) argv, "hn:ids:m", long_options, NULL)) != -1) {
     switch (opt) {
+      case 'h':
+        showHelpMenu();
+        return 0;
+        break;
       case 'n':
         strcpy(deviceName, optarg);
         break;
@@ -77,6 +91,17 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   
   setVolume(deviceID, newVolume, propertyAddress);
   return 0;
+}
+
+void showHelpMenu() {
+  printf("Usage: AdjustVolume [-h] [-i] [-d] [-s] [-m] -n device-name\n"
+         "  Options:\n"
+         "    -h --help               Shows this screen.\n"
+         "    -i --increment          Increment volume by one step.\n"
+         "    -d --decrement          Decrement volume by one step.\n"
+         "    -s --set volume-level   Set volume to desired level (value between 0 and 1).\n"
+         "    -m --mute               Mutes volume.\n"
+         "    -n --device-name        The device you would like to adjust the volume of.\n");
 }
 
 int multipleOptionError() {
