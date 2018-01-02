@@ -15,6 +15,12 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   char deviceName[256];
   Float32 newVolume = -1.0;
   
+  // No arguments found, show help muni
+  if (argc < 2) {
+    showHelpMenu();
+    return 1;
+  }
+  
   static struct option long_options[] = {
     {"help", no_argument, NULL, 'h'},
     {"device-name", required_argument, NULL, 'n'},
@@ -61,11 +67,13 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
     }
   }
   
+  // No device name found
   if (strlen(deviceName) == 0) {
     printf("-n flag is required, please enter a device name.\n");
     return 1;
   }
   
+  // No function argument given
   if (functionType == 0) {
     printf("No function selected. Please select one function to adjust the volume (-i, -d, -s, -m).\n");
     return 1;
