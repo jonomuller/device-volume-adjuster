@@ -79,28 +79,50 @@ int startVolumeAdjuster(int argc, const char * argv[]) {
   }
   
   // Property address of volume level, used for getting/setting volume
-  AudioObjectPropertyAddress propertyAddress =  {
+  AudioObjectPropertyAddress volumeAddress =  {
     kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
     kAudioDevicePropertyScopeOutput,
     kAudioObjectPropertyElementMaster
   };
   
+  // Property address of mute value
+  AudioObjectPropertyAddress muteAddress = {
+    kAudioDevicePropertyMute,
+    kAudioDevicePropertyScopeOutput,
+    kAudioObjectPropertyElementMaster
+  };
+  
+  int muted = isMuted(deviceID, muteAddress);
+  
   if (functionType == kIncrementVolume || functionType == kDecrementVolume) {
-    newVolume = getNewVolume(deviceID, functionType, propertyAddress);
+    newVolume = getNewVolume(deviceID, functionType, volumeAddress);
   }
   
-  setVolume(deviceID, newVolume, propertyAddress);
+  if (functionType == kMuteVolume) {
+    mute(deviceID, !muted, muteAddress);
+  } else {
+    setVolume(deviceID, newVolume, volumeAddress);
+    
+    if (muted && newVolume > 0) {
+      mute(deviceID, 0, muteAddress);
+    }
+    
+    if (!muted && newVolume <= 0) {
+      mute(deviceID, 1, muteAddress);
+    }
+  }
+  
   return 0;
 }
 
 void showHelpMenu() {
   printf("Usage: AdjustVolume [-h] [-i] [-d] [-s] [-m] -n device-name\n"
          "  Options:\n"
-         "    -h --help               Shows this screen.\n"
+         "    -h --help               Show this screen.\n"
          "    -i --increment          Increment volume by one step.\n"
          "    -d --decrement          Decrement volume by one step.\n"
          "    -s --set volume-level   Set volume to desired level (value between 0 and 1).\n"
-         "    -m --mute               Mutes volume.\n"
+         "    -m --mute               Mutes/unmutes device.\n"
          "    -n --device-name        The device you would like to adjust the volume of.\n");
 }
 
@@ -148,6 +170,23 @@ AudioDeviceID getDeviceID(char * deviceName) {
   }
   
   return kAudioDeviceUnknown;
+}
+
+int isMuted(AudioDeviceID deviceID, AudioObjectPropertyAddress propertyAddress) {
+  UInt32 muted = 0;
+  UInt32 muteSize = sizeof(muted);
+  
+  // Get current mute value
+  AudioObjectGetPropertyData(deviceID, &propertyAddress, 0, nil, &muteSize, &muted);
+  
+  return muted;
+}
+
+void mute(AudioDeviceID deviceID, int muteValue, AudioObjectPropertyAddress propertyAddress) {
+  UInt32 muteSize = sizeof(muteValue);
+  
+  // Set new mute value
+  AudioObjectSetPropertyData(deviceID, &propertyAddress, 0, nil, muteSize, &muteValue);
 }
 
 Float32 getNewVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress) {

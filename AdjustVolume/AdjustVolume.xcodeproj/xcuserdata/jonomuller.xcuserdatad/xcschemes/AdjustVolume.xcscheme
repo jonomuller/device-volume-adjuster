@@ -66,18 +66,18 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-i -n &quot;Logitech Z600&quot;"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-n &quot;Built-in Output&quot; -m"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "--help"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-n &quot;Built-in Output&quot; -s 0.5"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-d -n &quot;Logitech Z600&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-m -n &quot;Logitech Z600&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

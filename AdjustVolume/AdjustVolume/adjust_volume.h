@@ -30,5 +30,7 @@ int startVolumeAdjuster(int argc, const char * argv[]);
 void showHelpMenu(void);
 int multipleOptionError(void);
 AudioDeviceID getDeviceID(char * deviceName);
+int isMuted(AudioDeviceID deviceID, AudioObjectPropertyAddress propertyAddress);
+void mute(AudioDeviceID deviceID, int muteValue, AudioObjectPropertyAddress propertyAddress);
 Float32 getNewVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress);
 void setVolume(AudioDeviceID deviceID, Float32 volumeLevel, AudioObjectPropertyAddress propertyAddress);
