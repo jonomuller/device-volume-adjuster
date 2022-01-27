@@ -24,6 +24,8 @@ typedef enum {
   kDecrementVolume = 2,
   kSetVolume = 3,
   kMuteVolume = 4,
+  kGetVolume = 5,
+  kCopyVolume = 6,
 } FunctionType;
 
 int startVolumeAdjuster(int argc, const char * argv[]);
@@ -33,4 +35,7 @@ AudioDeviceID getDeviceID(char * deviceName);
 int isMuted(AudioDeviceID deviceID, AudioObjectPropertyAddress propertyAddress);
 void mute(AudioDeviceID deviceID, int muteValue, AudioObjectPropertyAddress propertyAddress);
 Float32 getNewVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress);
+Float32 getVolume(AudioDeviceID deviceID, FunctionType type, AudioObjectPropertyAddress propertyAddress);
 void setVolume(AudioDeviceID deviceID, Float32 volumeLevel, AudioObjectPropertyAddress propertyAddress);
+void copyVolume(AudioDeviceID deviceID, Float32 volumeLevel, AudioObjectPropertyAddress propertyAddress);
+AudioDeviceID getCurrentlySelectedOutputID(AudioObjectPropertyAddress propertyAddress);
